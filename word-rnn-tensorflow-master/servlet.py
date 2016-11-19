@@ -34,7 +34,8 @@ def load_models():
 def process_url():
     prompt = request.args.get('text')
     challenger = request.args.get('challenger')
-    args = Namespace(prime=prompt, n=200, save_dir=challenger, sample=1)
+    n = request.args.get('n')
+    args = Namespace(prime=prompt, n=n, save_dir=challenger, sample=1)
     output = sample(args)
     return json.dumps({"text": output})
 

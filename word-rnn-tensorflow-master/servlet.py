@@ -9,7 +9,7 @@ import os
 from argparse import Namespace
 
 app = Flask(__name__)
-MODEL_DIRS = ["save"]
+MODEL_DIRS = ["save/save"]
 MODEL_LOOKUP = {}
 sess = None
 
@@ -31,16 +31,37 @@ def load_models():
 
 
 @app.route('/prompt')
-def process_url():
+def prompt():
     prompt = request.args.get('text')
     challenger = request.args.get('challenger')
-    n = request.args.get('n')
-    args = Namespace(prime=prompt, n=n, save_dir=challenger, sample=1)
+    n = int(request.args.get('n'))
+    args = Namespace(prime=prompt, n=n, save_dir="save/save", sample=1)
     output = sample(args)
-    return json.dumps({"text": output})
+    new_example = output[0]
+    for character in output[1:]:
+        # Append an underscore if the character is uppercase.
+        if character.isupper():
+            new_example += '\n'
+        new_example += character
+    return json.dumps({"text": new_example})
 
 
+@app.route('/raw')
+def gen_text():
+    prompt = request.args.get('text')
+    challenger = request.args.get('challenger')
+    n = int(request.args.get('n'))
+    args = Namespace(prime=prompt, n=n, save_dir="save/save", sample=1)
+    output = sample(args)
+    new_example = output[0]
+    for character in output[1:]:
+        # Append an underscore if the character is uppercase.
+        if character.isupper():
+            new_example += '<br>'
+        new_example += character
+    return new_example
 
-
-app.run(port=8888, host='0.0.0.0')
-
+if sys.platform == "darwin":
+    app.run(port=int(sys.argv[1]), host='0.0.0.0', debug=False)
+else:
+    app.run(port=int(sys.argv[1]), host='0.0.0.0')

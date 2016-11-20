@@ -4,6 +4,7 @@ from tensorflow.python.ops import seq2seq
 import random
 import numpy as np
 
+
 class Model():
     def __init__(self, args, infer=False):
         self.args = args

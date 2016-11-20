@@ -1,14 +1,21 @@
 from __future__ import print_function
-import numpy as np
 import tensorflow as tf
-
 import argparse
-import time
 import os
 from six.moves import cPickle
-
-from utils import TextLoader
 from model import Model
+
+sess = None
+with open(os.path.join('save/save', 'config.pkl'), 'rb') as f:
+    saved_args = cPickle.load(f)
+with open(os.path.join('save/save', 'words_vocab.pkl'), 'rb') as f:
+    words, vocab = cPickle.load(f)
+model = Model(saved_args, True)
+sess = tf.Session()
+with sess.as_default():
+    tf.initialize_all_variables().run()
+    saver = tf.train.Saver(tf.all_variables())
+    ckpt = tf.train.get_checkpoint_state('save/save')
 
 
 def main():
@@ -23,23 +30,13 @@ def main():
                        help='0 to use max at each timestep, 1 to sample at each timestep, 2 to sample on spaces')
 
     args = parser.parse_args()
-    print(args)
     print(sample(args))
 
 
 def sample(args):
-    with open(os.path.join(args.save_dir, 'config.pkl'), 'rb') as f:
-        saved_args = cPickle.load(f)
-    with open(os.path.join(args.save_dir, 'words_vocab.pkl'), 'rb') as f:
-        words, vocab = cPickle.load(f)
-    model = Model(saved_args, True)
-    with tf.Session() as sess:
-        tf.initialize_all_variables().run()
-        saver = tf.train.Saver(tf.all_variables())
-        ckpt = tf.train.get_checkpoint_state(args.save_dir)
-        if ckpt and ckpt.model_checkpoint_path:
-            saver.restore(sess, ckpt.model_checkpoint_path)
-            return model.sample(sess, words, vocab, args.n, args.prime, args.sample)
+    if ckpt and ckpt.model_checkpoint_path:
+        saver.restore(sess, ckpt.model_checkpoint_path)
+    return model.sample(sess, words, vocab, args.n, args.prime, args.sample)
 
 
 if __name__ == '__main__':

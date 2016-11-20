@@ -4,9 +4,9 @@ import collections
 from six.moves import cPickle
 import numpy as np
 import re
-import itertools
 
-class TextLoader():
+
+class TextLoader:
     def __init__(self, data_dir, batch_size, seq_length):
         self.data_dir = data_dir
         self.batch_size = batch_size
@@ -44,8 +44,8 @@ class TextLoader():
         string = re.sub(r"\)", " \) ", string)
         string = re.sub(r"\?", " \? ", string)
         string = re.sub(r"\s{2,}", " ", string)
+        string = re.sub("\[(.*?)\]", "", string)
         return string.strip().lower()
-
 
     def build_vocab(self, sentences):
         """
@@ -66,7 +66,7 @@ class TextLoader():
             data = f.read()
 
         # Optional text cleaning or make them lower case, etc.
-        #data = self.clean_str(data)
+        data = self.clean_str(data)
         x_text = data.split()
 
         self.vocab, self.words = self.build_vocab(x_text)

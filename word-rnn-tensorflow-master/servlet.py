@@ -7,6 +7,7 @@ import json
 import cPickle
 import os
 from argparse import Namespace
+from post_generation import clean_msg, uniform_syl
 
 app = Flask(__name__)
 MODEL_DIRS = ["save/save"]
@@ -53,13 +54,10 @@ def gen_text():
     n = int(request.args.get('n'))
     args = Namespace(prime=prompt, n=n, save_dir="save/save", sample=1)
     output = sample(args)
-    new_example = output[0]
-    for character in output[1:]:
-        # Append an underscore if the character is uppercase.
-        if character.isupper():
-            new_example += '<br>'
-        new_example += character
-    return new_example
+    output = clean_msg(output)
+    output = uniform_syl(output)
+    print output
+    return output
 
 if sys.platform == "darwin":
     app.run(port=int(sys.argv[1]), host='0.0.0.0', debug=False)

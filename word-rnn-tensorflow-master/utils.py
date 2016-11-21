@@ -26,7 +26,8 @@ class TextLoader:
         self.create_batches()
         self.reset_batch_pointer()
 
-    def clean_str(self, string):
+    @staticmethod
+    def clean_str(string):
         """
         Tokenization/string cleaning for all datasets except for SST.
         Original taken from https://github.com/yoonkim/CNN_sentence/blob/master/process_data

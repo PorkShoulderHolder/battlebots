@@ -32,7 +32,10 @@ class TextLoader:
         Tokenization/string cleaning for all datasets except for SST.
         Original taken from https://github.com/yoonkim/CNN_sentence/blob/master/process_data
         """
+        string = re.sub("\[(.*?)\]", "", string)
+        string = re.sub("\((.*?)\)", "", string)
         string = re.sub(r"[^가-힣A-Za-z0-9(),!?\'\`]", " ", string)
+        string = re.sub(r"\n", " __newline__ ", string)
         string = re.sub(r"\'s", " \'s", string)
         string = re.sub(r"\'ve", " \'ve", string)
         string = re.sub(r"n\'t", " n\'t", string)
@@ -45,7 +48,6 @@ class TextLoader:
         string = re.sub(r"\)", " \) ", string)
         string = re.sub(r"\?", " \? ", string)
         string = re.sub(r"\s{2,}", " ", string)
-        string = re.sub("\[(.*?)\]", "", string)
         return string.strip().lower()
 
     def build_vocab(self, sentences):

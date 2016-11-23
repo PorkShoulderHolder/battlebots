@@ -7,7 +7,7 @@ import json
 import cPickle
 import os
 from argparse import Namespace
-from post_generation import clean_msg, uniform_syl
+# from post_generation import clean_msg, uniform_syl, replace_w_rhymes
 
 app = Flask(__name__)
 MODEL_DIRS = ["save/save"]
@@ -54,9 +54,12 @@ def gen_text():
     n = int(request.args.get('n'))
     args = Namespace(prime=prompt, n=n, save_dir="save/save", sample=1)
     output = sample(args)
-    output = clean_msg(output)
-    output = uniform_syl(output)
+    # output = clean_msg(output)
+    output = output.replace("\n", "<br>")
     print output
+    # output = replace_w_rhymes(output)
+    print output
+    #output = uniform_syl(output)
     return output
 
 if sys.platform == "darwin":
